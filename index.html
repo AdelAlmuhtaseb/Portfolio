@@ -333,6 +333,17 @@ h2{margin:0;font-size:clamp(2rem,4.4vw,3.5rem);line-height:1.12;letter-spacing:-
 .bars b{font-weight:700}
 @media (max-width:860px){.ex-r{min-height:0;padding-top:12rem}}
 @media (max-width:560px){.seq text{font-size:15px}}
+/* v10: room for Dig in History photos and video */
+.reel{margin-top:1.5rem}
+.reel p{margin:0 0 .8rem;font-weight:700;color:var(--muted)}
+.rl{display:flex;gap:1rem;overflow-x:auto;overflow-anchor:none;scroll-snap-type:x mandatory;padding-bottom:.8rem}
+.sl{flex:none;scroll-snap-align:start;max-width:88vw}
+.sl[hidden]{display:none}
+.sl>*{display:block;height:clamp(14rem,32vw,22rem);width:auto;max-width:100%;border-radius:24px;background:#151515;object-fit:cover}
+.sl>img{cursor:zoom-in}
+.lbx{position:fixed;inset:0;z-index:97;background:rgba(0,0,0,.88);display:grid;place-items:center;padding:1.5rem;cursor:zoom-out}
+.lbx[hidden]{display:none}
+.lbx img{max-width:92vw;max-height:88vh;border-radius:16px}
 </style>
 </head>
 <body>
@@ -340,6 +351,7 @@ h2{margin:0;font-size:clamp(2rem,4.4vw,3.5rem);line-height:1.12;letter-spacing:-
 <div class="boot" aria-hidden="true"><div class="bt"><span style="--d:.1s">$ boot adel.dev</span><span style="--d:.5s">› backend systems ......... ok</span><span style="--d:.9s">› erp modules ............ ok</span><span style="--d:1.3s">› heritage tech .......... ok</span><span class="r" style="--d:1.6s">ready.</span></div></div>
 <div class="cp" id="cp" hidden><div class="cpb" role="dialog" aria-label="Command menu"><input id="cpi" placeholder="Type a command or search…" autocomplete="off" aria-label="Command"><ul id="cpl"></ul></div></div>
 <div class="toast" id="toast" role="status"></div>
+<div class="lbx" id="lbx" hidden><img alt="Enlarged photo"></div>
 <div class="acc2" role="group" aria-label="Accent colour"><button type="button" style="--c:#ff5a14" aria-label="Orange" aria-pressed="true"></button><button type="button" style="--c:#ff1472" aria-label="Magenta" aria-pressed="false"></button><button type="button" style="--c:#1470ff" aria-label="Blue" aria-pressed="false"></button><button type="button" style="--c:#14c868" aria-label="Green" aria-pressed="false"></button></div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="ar" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol></svg>
 
@@ -415,6 +427,7 @@ building things that run better now</pre></div>
     </div>
     <div class="ex-r"><svg class="seq" viewBox="0 0 440 236" role="img" aria-label="Request flow from the repo: setlang, nfc, current, video"><defs><marker id="ah" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="#ff5a14"/></marker></defs><rect class="h" x="8" y="4" width="104" height="30" rx="8"/><text x="60" y="24" text-anchor="middle">Tablet</text><line class="ll" x1="60" y1="34" x2="60" y2="232"/><rect class="h" x="168" y="4" width="104" height="30" rx="8"/><text x="220" y="24" text-anchor="middle">Flask on Pi</text><line class="ll" x1="220" y1="34" x2="220" y2="232"/><rect class="h" x="328" y="4" width="104" height="30" rx="8"/><text x="380" y="24" text-anchor="middle">RC522</text><line class="ll" x1="380" y1="34" x2="380" y2="232"/><path class="ar" d="M62 78H214" marker-end="url(#ah)"/><text x="140" y="69" text-anchor="middle">1 POST /setlang</text><path class="ar" d="M378 122H226" marker-end="url(#ah)"/><text x="300" y="113" text-anchor="middle">2 POST /nfc</text><path class="ar" d="M62 166H214" marker-end="url(#ah)"/><text x="140" y="157" text-anchor="middle">3 GET /current</text><path class="ar" d="M62 210H214" marker-end="url(#ah)"/><text x="140" y="201" text-anchor="middle">4 GET /video/&lt;file&gt;</text></svg><p class="cap">app.py 37 lines · nfc_reader.py 21 lines · index.html 764 lines</p><div class="tagx"><div class="tb2"><b>Cat. 01</b>Python Flask<br>Raspberry Pi 4<br>RC522 NFC reader<br>Single-page web app</div></div></div>
   </article>
+  <div class="reel" id="reel" hidden><p>From the exhibit</p><div class="rl" id="rl"></div></div>
   <article class="ex rev" style="--pb:#f3f3f1;--pf:#0c0c0c">
     <div class="ex-l"><span class="ex-no" aria-hidden="true">02</span>
       <p class="ex-tag">No. 02 · Crowdsourced heritage preservation, 2026</p>
@@ -557,6 +570,26 @@ building things that run better now</pre></div>
     }
     if (e.key.length === 1) { buf = (buf + e.key.toLowerCase()).slice(-20); if (buf.replace(/ /g,'').slice(-12) === 'sudohireadel') { buf = ''; shut(); party(); } }
   });
+
+  // Dig in History media: put files next to this page and they appear under the project.
+  // Video: dig-in-history.mp4   Photos: dig-in-history-1.jpg ... dig-in-history-6.jpg
+  var MEDIA = {video:'dig-in-history', images:'dig-in-history-', count:6};
+  (function(){
+    var rl = document.getElementById('rl'), reel = document.getElementById('reel'), lbx = document.getElementById('lbx');
+    function slot(){ var d = document.createElement('div'); d.className = 'sl'; d.hidden = true; rl.appendChild(d); return d; }
+    var touched = false; ['pointerdown','wheel','touchstart'].forEach(function(ev){rl.addEventListener(ev,function(){touched = true},{passive:true,once:true})});
+    function ok(d,el){ d.appendChild(el); d.hidden = false; reel.hidden = false; if (!touched) rl.scrollLeft = 0; }
+    function tryList(urls,make,d){ var i = 0; (function next(){ if (i >= urls.length) { d.remove(); return; } make(urls[i++],next,d); })(); }
+    function mkVideo(u,next,d){ var v = document.createElement('video'); v.controls = true; v.playsInline = true; v.preload = 'metadata'; v.setAttribute('aria-label','Dig in History exhibit video');
+      v.addEventListener('loadedmetadata',function(){ok(d,v)}); v.addEventListener('error',next); v.src = u + '#t=0.1'; }
+    function mkImg(u,next,d){ var im = new Image(); im.alt = 'Photo from the Dig in History exhibit'; im.onload = function(){ok(d,im)}; im.onerror = next; im.src = u;
+      im.addEventListener('click',function(){ lbx.querySelector('img').src = im.src; lbx.hidden = false; }); }
+    tryList(['.mp4','.webm','.mov'].map(function(e){return MEDIA.video+e}),mkVideo,slot());
+    for (var n=1;n<=MEDIA.count;n++) tryList(['.jpg','.jpeg','.png','.webp'].map(function(e){return MEDIA.images+n+e}),mkImg,slot());
+    lbx.addEventListener('click',function(){lbx.hidden = true});
+    addEventListener('keydown',function(e){ if (e.key === 'Escape') lbx.hidden = true; });
+  })();
+
 
   if (reduce || !window.gsap) return;
   gsap.registerPlugin(ScrollTrigger);
