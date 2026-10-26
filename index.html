@@ -156,8 +156,6 @@ h2{margin:0;font-size:clamp(2rem,4.4vw,3.5rem);line-height:1.12;letter-spacing:-
 .exp .job time,.exp .job .co{color:rgba(0,0,0,.55)}
 .exp .job p.d{color:rgba(0,0,0,.78)}
 .list{position:relative;padding-left:2rem}
-.list::before,.tl{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:rgba(0,0,0,.12)}
-.tl{background:var(--orange);transform:scaleY(0);transform-origin:0 0;z-index:1}
 .job{position:relative}
 .job::before{content:"";position:absolute;left:calc(-2rem - 5px);top:2.15rem;width:12px;height:12px;border-radius:50%;background:#f3f3f1;border:2px solid rgba(0,0,0,.3);z-index:2;transition:all .4s}
 .job.on::before{background:var(--orange);border-color:var(--orange);box-shadow:0 0 0 6px rgba(255,90,20,.2)}
@@ -334,16 +332,35 @@ h2{margin:0;font-size:clamp(2rem,4.4vw,3.5rem);line-height:1.12;letter-spacing:-
 @media (max-width:860px){.ex-r{min-height:0;padding-top:12rem}}
 @media (max-width:560px){.seq text{font-size:15px}}
 /* v10: room for Dig in History photos and video */
+/* v11: media as specimen plates with a museum-style viewer */
 .reel{margin-top:1.5rem}
 .reel p{margin:0 0 .8rem;font-weight:700;color:var(--muted)}
-.rl{display:flex;gap:1rem;overflow-x:auto;overflow-anchor:none;scroll-snap-type:x mandatory;padding-bottom:.8rem}
-.sl{flex:none;scroll-snap-align:start;max-width:88vw}
+.rl{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:11.5rem;gap:1rem}
+.sl{position:relative;grid-column:span var(--c,4);grid-row:span var(--r,1);min-width:0}
 .sl[hidden]{display:none}
-.sl>*{display:block;height:clamp(14rem,32vw,22rem);width:auto;max-width:100%;border-radius:24px;background:#151515;object-fit:cover}
-.sl>img{cursor:zoom-in}
-.lbx{position:fixed;inset:0;z-index:97;background:rgba(0,0,0,.88);display:grid;place-items:center;padding:1.5rem;cursor:zoom-out}
-.lbx[hidden]{display:none}
-.lbx img{max-width:92vw;max-height:88vh;border-radius:16px}
+.plt{position:absolute;inset:0;display:block;width:100%;height:100%;padding:0;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#151515;cursor:pointer;color:#fff}
+.plt>img,.plt>video{display:block;width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.plt:hover>img,.plt:hover>video,.plt:focus-visible>img,.plt:focus-visible>video{transform:scale(1.05)}
+.plt::after{content:"";position:absolute;inset:.55rem;border:1px solid rgba(255,255,255,.4);border-radius:16px;pointer-events:none;transition:border-color .3s}
+.plt:hover::after,.plt:focus-visible::after{border-color:var(--orange)}
+.fg{position:absolute;z-index:1;left:1rem;bottom:1rem;font:600 .72rem ui-monospace,Menlo,monospace;background:rgba(10,10,10,.78);backdrop-filter:blur(6px);padding:.3rem .65rem;border-radius:99px}
+.pl{position:absolute;z-index:1;right:1rem;bottom:1rem;width:2.8rem;height:2.8rem;border-radius:50%;background:var(--orange);display:grid;place-items:center}
+.pl::before{content:"";margin-left:.2rem;border-left:.8rem solid #fff;border-top:.5rem solid transparent;border-bottom:.5rem solid transparent}
+@media (max-width:700px){.rl{grid-template-columns:repeat(2,1fr);grid-auto-rows:9rem}.sl{grid-column:span 1;grid-row:span 1}.sl.big{grid-column:span 2;grid-row:span 2}}
+.vopen{overflow:hidden}
+.vw{position:fixed;inset:0;z-index:97;background:rgba(8,8,8,.97);display:grid;grid-template-rows:1fr auto auto;gap:.8rem;padding:4rem 1rem 1rem}
+.vw[hidden]{display:none}
+.vs{display:grid;place-items:center;min-height:0;position:relative}
+.vs>img,.vs>video{display:block;max-width:min(92vw,1200px);max-height:calc(100vh - 14rem);max-height:calc(100dvh - 14rem);border-radius:14px;background:#000;box-shadow:0 30px 80px -30px #000}
+.vc{margin:0;text-align:center;font:600 .78rem ui-monospace,Menlo,monospace;color:rgba(255,255,255,.75)}
+.vt{display:flex;gap:.5rem;justify-content:center;overflow-x:auto;padding:.3rem}
+.vt button{flex:none;width:4.5rem;height:3.2rem;padding:0;border-radius:10px;overflow:hidden;border:2px solid transparent;background:#151515;cursor:pointer;opacity:.55}
+.vt button.on{border-color:var(--orange);opacity:1}
+.vt img,.vt video{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.vx,.vn{position:absolute;z-index:2;width:2.8rem;height:2.8rem;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(20,20,20,.7);color:#fff;font-size:1.5rem;line-height:1;cursor:pointer;display:grid;place-items:center}
+.vx{top:calc(.8rem + env(safe-area-inset-top,0px));right:1rem}
+.vn{top:50%;transform:translateY(-50%)}.vp{left:1rem}.vf{right:1rem}
+.vw.one .vn,.vw.one .vt{display:none}
 </style>
 </head>
 <body>
@@ -351,7 +368,12 @@ h2{margin:0;font-size:clamp(2rem,4.4vw,3.5rem);line-height:1.12;letter-spacing:-
 <div class="boot" aria-hidden="true"><div class="bt"><span style="--d:.1s">$ boot adel.dev</span><span style="--d:.5s">› backend systems ......... ok</span><span style="--d:.9s">› erp modules ............ ok</span><span style="--d:1.3s">› heritage tech .......... ok</span><span class="r" style="--d:1.6s">ready.</span></div></div>
 <div class="cp" id="cp" hidden><div class="cpb" role="dialog" aria-label="Command menu"><input id="cpi" placeholder="Type a command or search…" autocomplete="off" aria-label="Command"><ul id="cpl"></ul></div></div>
 <div class="toast" id="toast" role="status"></div>
-<div class="lbx" id="lbx" hidden><img alt="Enlarged photo"></div>
+<div class="vw" id="vw" role="dialog" aria-modal="true" aria-label="Exhibit viewer" hidden>
+  <button class="vx" id="vx" type="button" aria-label="Close viewer">×</button>
+  <button class="vn vp" id="vp" type="button" aria-label="Previous">‹</button>
+  <button class="vn vf" id="vf" type="button" aria-label="Next">›</button>
+  <div class="vs" id="vs"></div><p class="vc" id="vc"></p><div class="vt" id="vt"></div>
+</div>
 <div class="acc2" role="group" aria-label="Accent colour"><button type="button" style="--c:#ff5a14" aria-label="Orange" aria-pressed="true"></button><button type="button" style="--c:#ff1472" aria-label="Magenta" aria-pressed="false"></button><button type="button" style="--c:#1470ff" aria-label="Blue" aria-pressed="false"></button><button type="button" style="--c:#14c868" aria-label="Green" aria-pressed="false"></button></div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="ar" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol></svg>
 
@@ -427,7 +449,7 @@ building things that run better now</pre></div>
     </div>
     <div class="ex-r"><svg class="seq" viewBox="0 0 440 236" role="img" aria-label="Request flow from the repo: setlang, nfc, current, video"><defs><marker id="ah" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="#ff5a14"/></marker></defs><rect class="h" x="8" y="4" width="104" height="30" rx="8"/><text x="60" y="24" text-anchor="middle">Tablet</text><line class="ll" x1="60" y1="34" x2="60" y2="232"/><rect class="h" x="168" y="4" width="104" height="30" rx="8"/><text x="220" y="24" text-anchor="middle">Flask on Pi</text><line class="ll" x1="220" y1="34" x2="220" y2="232"/><rect class="h" x="328" y="4" width="104" height="30" rx="8"/><text x="380" y="24" text-anchor="middle">RC522</text><line class="ll" x1="380" y1="34" x2="380" y2="232"/><path class="ar" d="M62 78H214" marker-end="url(#ah)"/><text x="140" y="69" text-anchor="middle">1 POST /setlang</text><path class="ar" d="M378 122H226" marker-end="url(#ah)"/><text x="300" y="113" text-anchor="middle">2 POST /nfc</text><path class="ar" d="M62 166H214" marker-end="url(#ah)"/><text x="140" y="157" text-anchor="middle">3 GET /current</text><path class="ar" d="M62 210H214" marker-end="url(#ah)"/><text x="140" y="201" text-anchor="middle">4 GET /video/&lt;file&gt;</text></svg><p class="cap">app.py 37 lines · nfc_reader.py 21 lines · index.html 764 lines</p><div class="tagx"><div class="tb2"><b>Cat. 01</b>Python Flask<br>Raspberry Pi 4<br>RC522 NFC reader<br>Single-page web app</div></div></div>
   </article>
-  <div class="reel" id="reel" hidden><p>From the exhibit</p><div class="rl" id="rl"></div></div>
+  <div class="reel" id="reel" hidden><p>From the exhibit · tap a plate to open it</p><div class="rl" id="rl"></div></div>
   <article class="ex rev" style="--pb:#f3f3f1;--pf:#0c0c0c">
     <div class="ex-l"><span class="ex-no" aria-hidden="true">02</span>
       <p class="ex-tag">No. 02 · Crowdsourced heritage preservation, 2026</p>
@@ -575,21 +597,72 @@ building things that run better now</pre></div>
   // Video: dig-in-history.mp4   Photos: dig-in-history-1.jpg ... dig-in-history-6.jpg
   var MEDIA = {video:'dig-in-history', images:'dig-in-history-', count:6};
   (function(){
-    var rl = document.getElementById('rl'), reel = document.getElementById('reel'), lbx = document.getElementById('lbx');
+    var rl = document.getElementById('rl'), reel = document.getElementById('reel'), vw = document.getElementById('vw'), vs = document.getElementById('vs'), vc = document.getElementById('vc'), vt = document.getElementById('vt'), cur = 0, lastTile = null;
+    function vis(){ return [].slice.call(rl.querySelectorAll('.sl:not([hidden])')); }
     function slot(){ var d = document.createElement('div'); d.className = 'sl'; d.hidden = true; rl.appendChild(d); return d; }
-    var touched = false; ['pointerdown','wheel','touchstart'].forEach(function(ev){rl.addEventListener(ev,function(){touched = true},{passive:true,once:true})});
-    function ok(d,el){ d.appendChild(el); d.hidden = false; reel.hidden = false; if (!touched) rl.scrollLeft = 0; }
-    function tryList(urls,make,d){ var i = 0; (function next(){ if (i >= urls.length) { d.remove(); return; } make(urls[i++],next,d); })(); }
-    function mkVideo(u,next,d){ var v = document.createElement('video'); v.controls = true; v.playsInline = true; v.preload = 'metadata'; v.setAttribute('aria-label','Dig in History exhibit video');
-      v.addEventListener('loadedmetadata',function(){ok(d,v)}); v.addEventListener('error',next); v.src = u + '#t=0.1'; }
-    function mkImg(u,next,d){ var im = new Image(); im.alt = 'Photo from the Dig in History exhibit'; im.onload = function(){ok(d,im)}; im.onerror = next; im.src = u;
-      im.addEventListener('click',function(){ lbx.querySelector('img').src = im.src; lbx.hidden = false; }); }
+    function layout(){
+      var v = vis(), n = v.length;
+      v.forEach(function(d,i){
+        var k = i%6, gs = i-k, sp;
+        if (k < 3) { sp = [[7,2],[5,1],[5,1]][k]; var c = Math.min(3,n-gs); if (c === 1) sp = [12,1]; if (c === 2 && k === 1) sp = [5,2]; }
+        else { var t = Math.min(3,n-gs-3); sp = [12/t,1]; }
+        d.style.setProperty('--c',sp[0]); d.style.setProperty('--r',sp[1]); d.classList.toggle('big',i === 0);
+        d.querySelector('.fg').textContent = (d.dataset.type === 'video' ? 'Video · ' : '') + 'Fig. ' + (i+1);
+      });
+    }
+    function ok(d,el,type,src){
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'plt'; b.setAttribute('aria-label','Open ' + (type === 'video' ? 'video' : 'photo'));
+      b.appendChild(el); var f = document.createElement('span'); f.className = 'fg'; b.appendChild(f);
+      if (type === 'video') { var pl = document.createElement('i'); pl.className = 'pl'; b.appendChild(pl); }
+      d.dataset.type = type; d.dataset.src = src; d.appendChild(b); d.hidden = false; reel.hidden = false; layout();
+      b.addEventListener('click',function(){ open_(vis().indexOf(d),b); });
+    }
+    function tryList(urls,make,d){ var i = 0; (function next(){ if (i >= urls.length) { d.remove(); layout(); return; } make(urls[i++],next,d); })(); }
+    function mkVideo(u,next,d){ var v = document.createElement('video'); v.muted = true; v.playsInline = true; v.preload = 'metadata';
+      v.addEventListener('loadedmetadata',function(){ok(d,v,'video',u)}); v.addEventListener('error',next); v.src = u + '#t=0.1'; }
+    function mkImg(u,next,d){ var im = new Image(); im.alt = 'Photo from the Dig in History exhibit'; im.onload = function(){ok(d,im,'image',u)}; im.onerror = next; im.src = u; }
     tryList(['.mp4','.webm','.mov'].map(function(e){return MEDIA.video+e}),mkVideo,slot());
     for (var n=1;n<=MEDIA.count;n++) tryList(['.jpg','.jpeg','.png','.webp'].map(function(e){return MEDIA.images+n+e}),mkImg,slot());
-    lbx.addEventListener('click',function(){lbx.hidden = true});
-    addEventListener('keydown',function(e){ if (e.key === 'Escape') lbx.hidden = true; });
-  })();
 
+    // viewer: the plate grows into the stage, arrows / swipe / keys move between plates
+    function morph(m,from,rev){
+      var to = m.getBoundingClientRect(), f = from.getBoundingClientRect(); if (!to.width || !f.width) return null;
+      var sc = Math.max(f.width/to.width,f.height/to.height), ix = (to.width*sc-f.width)/(2*sc), iy = (to.height*sc-f.height)/(2*sc);
+      var dx = (f.left+f.width/2)-(to.left+to.width/2), dy = (f.top+f.height/2)-(to.top+to.height/2);
+      return m.animate([{transform:'translate('+dx+'px,'+dy+'px) scale('+sc+')',clipPath:'inset('+iy+'px '+ix+'px round 22px)'},{transform:'none',clipPath:'inset(0 round 14px)'}],{duration:rev?360:480,easing:'cubic-bezier(.2,.8,.2,1)',direction:rev?'reverse':'normal',fill:'both'});
+    }
+    function ready(m,cb){ if (m.tagName === 'VIDEO') { if (m.readyState >= 1) cb(); else m.addEventListener('loadedmetadata',cb,{once:true}); } else { (m.decode ? m.decode() : Promise.resolve()).then(cb,cb); } }
+    function show(i,dir,from){
+      var v = vis(), it = v[i], m; if (!it) return; cur = i;
+      if (it.dataset.type === 'video') { m = document.createElement('video'); m.controls = true; m.autoplay = true; m.playsInline = true; m.src = it.dataset.src; }
+      else { m = new Image(); m.alt = 'Photo from the Dig in History exhibit'; m.src = it.dataset.src; }
+      m.style.opacity = 0; vs.textContent = ''; vs.appendChild(m);
+      ready(m,function(){ m.style.opacity = 1; if (from) morph(m,from,false); else if (dir) m.animate([{opacity:0,transform:'translateX('+(dir*60)+'px)'},{opacity:1,transform:'none'}],{duration:350,easing:'ease-out'}); });
+      vc.textContent = 'Fig. ' + (i+1) + ' of ' + v.length + ' · ' + (it.dataset.type === 'video' ? 'Video' : 'Photo') + ' · Dig in History';
+      [].forEach.call(vt.children,function(b,k){ b.classList.toggle('on',k === i); });
+      vw.classList.toggle('one',v.length < 2);
+    }
+    function open_(i,tile){
+      var v = vis(); lastTile = tile; vt.textContent = '';
+      v.forEach(function(d,k){ var b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-label','Go to figure ' + (k+1));
+        var t = d.dataset.type === 'video' ? document.createElement('video') : new Image(); if (t.tagName === 'VIDEO') { t.muted = true; t.preload = 'metadata'; t.src = d.dataset.src + '#t=0.1'; } else t.src = d.dataset.src; t.alt = '';
+        b.appendChild(t); b.addEventListener('click',function(){ go(k); }); vt.appendChild(b); });
+      vw.hidden = false; document.documentElement.classList.add('vopen'); show(i,0,tile); document.getElementById('vx').focus();
+    }
+    function go(k){ var n = vis().length; k = (k+n)%n; if (k !== cur) show(k,k > cur ? 1 : -1,null); }
+    function close_(){
+      if (vw.hidden) return; var m = vs.firstChild, done = function(){ vw.hidden = true; vs.textContent = ''; document.documentElement.classList.remove('vopen'); if (lastTile) lastTile.focus({preventScroll:true}); };
+      var t = vis()[cur] && vis()[cur].firstChild, a = null; if (m && t) { var r = t.getBoundingClientRect(); if (r.bottom > 0 && r.top < innerHeight) a = morph(m,t,true); }
+      if (a) a.onfinish = done; else done();
+    }
+    document.getElementById('vx').addEventListener('click',close_);
+    document.getElementById('vp').addEventListener('click',function(){go(cur-1)});
+    document.getElementById('vf').addEventListener('click',function(){go(cur+1)});
+    vw.addEventListener('click',function(e){ if (e.target === vw || e.target === vs) close_(); });
+    addEventListener('keydown',function(e){ if (vw.hidden) return; if (e.key === 'Escape') close_(); else if (e.key === 'ArrowRight') go(cur+1); else if (e.key === 'ArrowLeft') go(cur-1); });
+    var sx = null; vs.addEventListener('pointerdown',function(e){ if (e.pointerType === 'touch') sx = e.clientX; });
+    vs.addEventListener('pointerup',function(e){ if (sx === null) return; var d = e.clientX-sx; sx = null; if (Math.abs(d) > 50) go(cur + (d < 0 ? 1 : -1)); });
+  })();
 
   if (reduce || !window.gsap) return;
   gsap.registerPlugin(ScrollTrigger);
